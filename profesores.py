@@ -16,7 +16,7 @@ class Profesor:
     def __str__(self):
         return f"{self._nombre} {self._apellido}: ID {self._id} clave {self._clave}"
 
-    def encriptar_clave(self, nueva_clave):
+    def encriptar_clave(self, nueva_clave: str) -> str:
         """
         Recoge la clave introducida y la encripta con la forma SHA-1,
         para no guardar los datos sensibles de forma explícita.
