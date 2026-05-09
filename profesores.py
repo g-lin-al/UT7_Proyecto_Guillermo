@@ -1,3 +1,6 @@
+import hashlib
+
+
 class Profesor:
     _id: str = ""
     _nombre: str = ""
@@ -8,7 +11,23 @@ class Profesor:
         self._id = id
         self._nombre = nombre
         self._apellido = apellido
-        self._clave = clave
+        self._clave = self.encriptar_clave(clave)
+
+    def __str__(self):
+        return f"{self._nombre} {self._apellido}: ID {self._id} clave {self._clave}"
+
+    def encriptar_clave(self, nueva_clave):
+        """
+        Recoge la clave introducida y la encripta con la forma SHA-1,
+        para no guardar los datos sensibles de forma explícita.
+
+        :param nueva_clave:
+        :return:
+        """
+        texto_a_bytes = nueva_clave.encode('utf-8')
+        clave_sha1_obj = hashlib.sha1(texto_a_bytes)
+        clave_encriptada = clave_sha1_obj.hexdigest()
+        return clave_encriptada
 
     @property
     def id(self):
@@ -34,10 +53,6 @@ class Profesor:
     def apellido(self, nuevo_apellido: str):
         self._apellido = nuevo_apellido
 
-    @property
-    def clave(self):
-        return self._clave
-
     @clave.setter
-    def clave(self, nuevo_clave: str):
-        self._clave = nuevo_clave
+    def clave(self, nueva_clave: str):
+        self._clave = self.encriptar_clave(nueva_clave)
