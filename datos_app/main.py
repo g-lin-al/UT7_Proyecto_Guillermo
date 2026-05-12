@@ -70,39 +70,25 @@ class App:
 
     def run(self):
         opc: int = -1
-        print(self.imprimir_menu_principal())
-        opc = self.elegir_opcion()
         while opc != Cons.OPC_8:
-            if opc == Cons.OPC_1: # Crear usuario (Admin)
+            print(self.imprimir_menu_principal())
+            opc = self.elegir_opcion()
+            if opc == Cons.OPC_1:  # Crear usuario (Admin)
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             elif opc == Cons.OPC_2: # Crear usuario (Profesor)
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             elif opc == Cons.OPC_3: # Ver calendario de guardias
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             elif opc == Cons.OPC_4: # Dar de alta guardias
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             elif opc == Cons.OPC_5: # Dar de baja guardias
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             elif opc == Cons.OPC_6: # Generar informe de guardias
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             elif opc == Cons.OPC_7: # Generar listado de usuarios
                 print(opc)
-                print(self.imprimir_menu_principal())
-                self.elegir_opcion()
             else:
-                self.opcion_no_reconocida()
+                print("Opción no reconocida")
 
 
 App().run()
