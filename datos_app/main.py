@@ -87,9 +87,10 @@ class App:
                 print(opc)
             elif opc == Cons.OPC_7: # Generar listado de usuarios
                 print(opc)
+            elif opc == Cons.OPC_8:
+                print("Saliendo...")
             else:
                 print("Opción no reconocida")
 
 
 App().run()
-print("Saliendo...")
