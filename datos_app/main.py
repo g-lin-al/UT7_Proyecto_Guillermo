@@ -1,6 +1,7 @@
 import mysql
 from mysql.connector import errorcode
 from datos_app.cons import Cons
+from datos_centro.guardias import Guardia
 from datos_personal.profesores import Profesor
 
 
@@ -51,8 +52,9 @@ class App:
     def carga_datos(self):
         pass
 
-    def crear_admin(self):
-        pass # IDEA -> meter los admins como profesores con el apellido "ADMIN" y así poder filtrarlos
+    def crear_admin(self, id: str, nombre: str, clave: str) -> Profesor:
+        adm: Profesor = Profesor(id, nombre, "ADMIN", clave)
+        return adm
 
     def crear_profesor(self, id: str, nombre: str, apellidos: str, clave: str) -> Profesor:
         prof: Profesor = Profesor(id, nombre, apellidos, clave)
@@ -67,7 +69,7 @@ class App:
             cursor.execute(aniadir_prof)
             print(f"Añadido profesor {prof.nombre} (id: {prof.id}).")
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:  # errno dependerá de la libería
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Error de conexión.")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("No existe dicha base de datos.")
@@ -79,17 +81,81 @@ class App:
     def ver_calendario(self):
         pass
 
-    def dar_alta_guardia(self):
-        pass
+    def dar_alta_guardia(self, id: str, dia: str, hora: str, curso: str, clase: str, tarea: str, fichero: str):
+        guardia: Guardia = Guardia(id, dia, hora, curso, clase, tarea)
+        cursor = self.CONEXION.cursor()
+        self.CONEXION.autocommit = True
+        aniadir_guardia = ("INSERT INTO guardias (id, dia, hora, curso, clase, tarea, fichero)" +
+                        f" VALUES ('{guardia.id}', '{guardia.dia}', '{guardia.hora}', '{guardia.curso}'),"
+                        f" '{guardia.clase}', '{guardia.tarea}, '{guardia.fichero'}")
+        try:
+            cursor.execute(aniadir_guardia)
+            print(f"Añadida la guardia el día {guardia.dia} en la clase {guardia.clase}.")
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Error de conexión.")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("No existe dicha base de datos.")
+            else:
+                print(err)
+        cursor.close()
+        self.CONEXION.close()
 
-    def dar_baja_guardia(self):
-        pass
+    def dar_baja_guardia(self, id: str, dia: str, hora: str):
+        cursor = self.CONEXION.cursor()
+        self.CONEXION.autocommit = True
+        borrar_guardia = (f"DELETE FROM guardias "
+                          f"WHERE id = '{id}' "
+                          f"AND dia = {dia} "
+                          f"AND hora = '{hora}'")
+        try:
+            cursor.execute(borrar_guardia)
+            print(f"Eliminada la guardia del día {dia} a las {hora} horas.")
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Error de conexión.")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("No existe dicha base de datos.")
+            else:
+                print(err)
+        cursor.close()
+        self.CONEXION.close()
 
     def generar_inf_guardias(self):
         pass
 
-    def generar_listado_usuarios(self):
-        pass
+    def generar_listado_usuarios(self, tipo: str): # !!!!!!!!!!!!!!!!! Probar en BD, falta recorrer los resultados para imprimirlos
+        cursor = self.CONEXION.cursor()
+        self.CONEXION.autocommit = True
+        listar_usuarios: str = f"SELECT * FROM profesores"
+        if tipo == Cons.OPC_1:
+            try:
+                id, nombre, apellido = cursor.execute(listar_usuarios)
+                print(id, nombre, apellido)
+            except mysql.connector.Error as err:
+                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                    print("Error de conexión.")
+                elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                    print("No existe dicha base de datos.")
+                else:
+                    print(err)
+        elif tipo == Cons.OPC_2:
+            listar_usuarios = listar_usuarios.join(" where apellido = 'ADMIN'")
+            try:
+                cursor.execute(listar_usuarios)
+                id, nombre = cursor.execute(listar_usuarios)
+                print(id, nombre)
+            except mysql.connector.Error as err:
+                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                    print("Error de conexión.")
+                elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                    print("No existe dicha base de datos.")
+                else:
+                    print(err)
+        else:
+            print("Opción no válida.")
+        cursor.close()
+        self.CONEXION.close()
 
     def run(self):
         opc: str = "-1"
@@ -97,7 +163,11 @@ class App:
             print(self.imprimir_menu_principal())
             opc = self.elegir_opcion()
             if opc == Cons.OPC_1:  # Crear usuario (Admin)
-                print(opc)
+                id: str = input("ID del Admin.: ")
+                nombre: str = input("Nombre del Admin.: ")
+                clave: str = input("Clave del profesor: ")
+                self.insertar_profesor(self.crear_admin(id, nombre, clave))
+                continue
             elif opc == Cons.OPC_2: # Crear usuario (Profesor)
                 id: str = input("ID del profesor: ")
                 nombre: str = input("Nombre del profesor: ")
@@ -108,13 +178,28 @@ class App:
             elif opc == Cons.OPC_3: # Ver calendario de guardias
                 print(opc)
             elif opc == Cons.OPC_4: # Dar de alta guardias
-                print(opc)
+                id: str = input("ID del profesor de guardia: ")
+                dia: str = input("Día de la guardia: ")
+                hora: str = input("Hora de la guardia: ")
+                curso: str = input("Curso de guardia: ")
+                clase: str = input("Clase en la que se realiza la guardia: ")
+                tarea: str = input("¿Tarea asignada a la guardia? (S/N): ")
+                if tarea == "S":
+                    fichero: str = input("Texto de la tarea: ")
+                else:
+                    fichero = ""
+                self.dar_alta_guardia(id, dia, hora, curso, clase, tarea, fichero)
             elif opc == Cons.OPC_5: # Dar de baja guardias
-                print(opc)
+                id: str = input("ID del profesor de guardia: ")
+                dia: str = input("Día de la guardia: ")
+                hora: str = input("Hora de la guardia: ")
+                self.dar_baja_guardia(id, dia, hora)
             elif opc == Cons.OPC_6: # Generar informe de guardias
                 print(opc)
             elif opc == Cons.OPC_7: # Generar listado de usuarios
-                print(opc)
+                opc = input("1.- Listado de Profesores\n"
+                            "2.- Listado de Admins.\n"
+                            "-> ")
             elif opc == Cons.OPC_8:
                 print("Saliendo...")
             else:

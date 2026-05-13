@@ -7,13 +7,14 @@ class Guardia:
     _tarea: str = ""
     _ficheros: str = ""
 
-    def __init__(self, id, dia, hora, curso, clase, tarea):
+    def __init__(self, id, dia, hora, curso, clase, tarea, ficheros: str = ""):
         self._id = id
         self._dia = dia
         self._hora = hora
         self._curso = curso
         self._clase = clase
         self._tarea = tarea
+        self._ficheros = ficheros
 
     @property
     def id(self):
@@ -62,3 +63,11 @@ class Guardia:
     @tarea.setter
     def tarea(self, nuevo_tarea: str):
         self._tarea = nuevo_tarea
+
+    @property
+    def ficheros(self):
+        return self._ficheros
+
+    @ficheros.setter
+    def ficheros(self, nuevo_ficheros: str):
+        self._ficheros = nuevo_ficheros
