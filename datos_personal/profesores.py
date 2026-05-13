@@ -53,6 +53,10 @@ class Profesor:
     def apellido(self, nuevo_apellido: str):
         self._apellido = nuevo_apellido
 
+    @property
+    def clave(self):
+        return self._clave
+
     @clave.setter
     def clave(self, nueva_clave: str):
         self._clave = self.encriptar_clave(nueva_clave)
