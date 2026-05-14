@@ -1,6 +1,8 @@
+import datetime
+
 class Guardia:
     _id: str = ""
-    _dia: str = ""
+    _dia: datetime = datetime
     _hora: str = ""
     _curso: str = ""
     _clase: str = ""

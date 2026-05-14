@@ -87,7 +87,7 @@ class App:
         self.CONEXION.autocommit = True
         aniadir_guardia = ("INSERT INTO guardias (id, dia, hora, curso, clase, tarea, fichero)" +
                         f" VALUES ('{guardia.id}', '{guardia.dia}', '{guardia.hora}', '{guardia.curso}'),"
-                        f" '{guardia.clase}', '{guardia.tarea}, '{guardia.fichero'}")
+                        f" '{guardia.clase}', '{guardia.tarea}, '{guardia.fichero}'")
         try:
             cursor.execute(aniadir_guardia)
             print(f"Añadida la guardia el día {guardia.dia} en la clase {guardia.clase}.")
@@ -124,14 +124,16 @@ class App:
     def generar_inf_guardias(self):
         pass
 
-    def generar_listado_usuarios(self, tipo: str): # !!!!!!!!!!!!!!!!! Probar en BD, falta recorrer los resultados para imprimirlos
+    def generar_listado_usuarios(self, tipo: str):
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
-        listar_usuarios: str = f"SELECT * FROM profesores"
+        listar_usuarios: str = f"SELECT id, nombre, apellidos FROM profesores"
         if tipo == Cons.OPC_1:
+            listar_usuarios = listar_usuarios + " where apellidos != 'ADMIN'"
             try:
-                id, nombre, apellido = cursor.execute(listar_usuarios)
-                print(id, nombre, apellido)
+                cursor.execute(listar_usuarios)
+                for id, nombre, apellido in cursor:
+                    print(f"ID: {id} - {nombre} {apellido}")
             except mysql.connector.Error as err:
                 if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                     print("Error de conexión.")
@@ -140,11 +142,11 @@ class App:
                 else:
                     print(err)
         elif tipo == Cons.OPC_2:
-            listar_usuarios = listar_usuarios.join(" where apellido = 'ADMIN'")
+            listar_usuarios = listar_usuarios + " where apellidos = 'ADMIN'"
             try:
                 cursor.execute(listar_usuarios)
-                id, nombre = cursor.execute(listar_usuarios)
-                print(id, nombre)
+                for id, nombre, apellido in cursor:
+                    print(f"ID: {id} - {nombre}")
             except mysql.connector.Error as err:
                 if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                     print("Error de conexión.")
@@ -200,6 +202,7 @@ class App:
                 opc = input("1.- Listado de Profesores\n"
                             "2.- Listado de Admins.\n"
                             "-> ")
+                self.generar_listado_usuarios(opc)
             elif opc == Cons.OPC_8:
                 print("Saliendo...")
             else:
