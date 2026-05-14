@@ -2,7 +2,7 @@ import datetime
 
 class Guardia:
     _id: str = ""
-    _dia: datetime = datetime
+    _dia = datetime.date
     _hora: str = ""
     _curso: str = ""
     _clase: str = ""
