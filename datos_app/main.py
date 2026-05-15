@@ -4,10 +4,11 @@ from mysql.connector import errorcode
 from datos_app.cons import Cons
 from datos_centro.guardias import Guardia
 from datos_personal.profesores import Profesor
+from ficheros.config import Config
 
 
 class App:
-    CONEXION = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='proyecto')
+    CONEXION = Config.cnx
 
     def imprimir_menu_principal(self):
         return (f"{Cons.SEPARADOR * 25}\n"
@@ -26,7 +27,7 @@ class App:
         return opc
 
     def realizar_nueva_operacion(self):
-        opc: int = -1
+        opc: str = "-1"
         print(f"¿Realizar otra operación?\n"
               f"{Cons.OPC_1} - Sí\n"
               f"{Cons.OPC_2} - No\n")
