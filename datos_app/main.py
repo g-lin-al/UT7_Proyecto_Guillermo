@@ -8,15 +8,6 @@ from datos_personal.profesores import Profesor
 from ficheros.config import Config
 
 
-
-
-
-
-# HACER MÉT0DO STR PARA T0D0
-
-
-
-
 class App:
     CONEXION = Config.cnx
 
@@ -85,7 +76,6 @@ class App:
             else:
                 print(err)
         cursor.close()
-        self.CONEXION.close()
 
     def ver_calendario(self):
         pass
@@ -108,7 +98,6 @@ class App:
             else:
                 print(err)
         cursor.close()
-        self.CONEXION.close()
 
     def dar_baja_guardia(self, id: str, dia: datetime.date, hora: str):
         cursor = self.CONEXION.cursor()
@@ -128,7 +117,6 @@ class App:
             else:
                 print(err)
         cursor.close()
-        self.CONEXION.close()
 
     def generar_inf_guardias(self):
         pass
@@ -166,7 +154,6 @@ class App:
         else:
             print("Opción no válida.")
         cursor.close()
-        self.CONEXION.close()
 
     def cargar_inicio(self):
         fichero: str = "carga_inicial.txt"
@@ -189,6 +176,7 @@ class App:
     def run(self):
         self.cargar_inicio()
         BaseDatos().cargar_profesores()
+        BaseDatos().cargar_admins()
         opc: str = "-1"
         while opc != Cons.OPC_8:
             print(self.imprimir_menu_principal())
@@ -237,6 +225,7 @@ class App:
                 self.generar_listado_usuarios(opc)
             elif opc == Cons.OPC_8:
                 print("Saliendo...")
+                self.CONEXION.close()
             else:
                 print("Opción no reconocida")
 
