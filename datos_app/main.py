@@ -1,10 +1,20 @@
 import datetime
 import mysql
 from mysql.connector import errorcode
+from datos_app.bbdd import BaseDatos
 from datos_app.cons import Cons
 from datos_centro.guardias import Guardia
 from datos_personal.profesores import Profesor
 from ficheros.config import Config
+
+
+
+
+
+
+# HACER MÉT0DO STR PARA T0D0
+
+
 
 
 class App:
@@ -178,6 +188,7 @@ class App:
 
     def run(self):
         self.cargar_inicio()
+        BaseDatos().cargar_profesores()
         opc: str = "-1"
         while opc != Cons.OPC_8:
             print(self.imprimir_menu_principal())
@@ -202,9 +213,9 @@ class App:
                 dia: int = int(input("Día de la guardia: "))
                 mes: int = int(input("Mes: "))
                 anio: int = int(input("Año: "))
-                hora: str = input("Hora de la guardia: ")
-                curso: str = input("Curso de guardia: ")
-                clase: str = input("Clase en la que se realiza la guardia: ")
+                hora: str = input("Hora de la guardia (1-6): ")
+                curso: str = input("Curso de guardia (primero, segundo): ")
+                clase: str = input("Clase en la que se realiza la guardia (1-6 ó biblioteca): ")
                 tarea: str = input("¿Tarea asignada a la guardia? (S/N): ")
                 fecha = datetime.datetime(anio, mes, dia)
                 if tarea == "S":
