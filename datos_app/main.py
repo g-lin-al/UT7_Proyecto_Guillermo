@@ -122,7 +122,7 @@ class App:
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
         busqueda = (f"select * from guardias where"
-                    f"{dia} between {f_ini} and {f_fin}")
+                    f"{dia} between '{f_ini}' and '{f_fin}'")
         try:
             cursor.execute(busqueda)
             for id, dia, hora, curso, aula, tarea, ficheros in cursor:
