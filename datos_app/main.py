@@ -15,7 +15,7 @@ class App:
         return (f"{Cons.SEPARADOR * 25}\n"
                 f"{Cons.OPC_1} - Crear usuario (Admin)\n"
                 f"{Cons.OPC_2} - Crear usuario (Profesor)\n"
-                f"{Cons.OPC_3} - Ver calendario de guardias\n"
+                f"{Cons.OPC_3} - Ver calendario de guardias semanal\n"
                 f"{Cons.OPC_4} - Dar de alta guardias\n"
                 f"{Cons.OPC_5} - Dar de baja guardias\n"
                 f"{Cons.OPC_6} - Generar informe de guardias\n"
@@ -50,7 +50,7 @@ class App:
         elif opc == Cons.OPC_2:
             return Cons.OPC_2
         else:
-            self.opcion_no_reconocida()
+            return "Opción no reconocida."
 
     def crear_admin(self, id: str, nombre: str, clave: str) -> Profesor:
         adm: Profesor = Profesor(id, nombre, "ADMIN", clave)
@@ -78,7 +78,30 @@ class App:
         cursor.close()
 
     def ver_calendario(self):
-        pass
+        fecha_hoy = datetime.datetime.now().strftime("%Y-%m-%d")
+        fecha_aniadida = fecha_hoy + datetime.timedelta(days=7)
+        cursor = self.CONEXION.cursor()
+        self.CONEXION.autocommit = True
+        busqueda = (f"select * from guardias where"
+                    f"dia between '{fecha_hoy}' and '{fecha_aniadida}'")
+        try:
+            cursor.execute(busqueda)
+            if cursor.rowcount != 0:
+                for id, dia, hora, curso, aula, tarea, ficheros in cursor:
+                    print(f"ID {id}:\n"
+                          f"Día {dia} a las {hora} horas\n"
+                          f"Curso: {curso}, aula {aula}\n"
+                          f"Tarea -> {tarea}\n\n")
+            else:
+                print(f"No hay guardias en los 7 días siguientes a {fecha_hoy}")
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Error de conexión.")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("No existe dicha base de datos.")
+            else:
+                print(err)
+        cursor.close()
 
     def dar_alta_guardia(self, id: str, dia: datetime.date, hora: str, curso: str, clase: str, tarea: str, fichero: str):
         guardia: Guardia = Guardia(id, dia, hora, curso, clase, tarea)
@@ -119,6 +142,8 @@ class App:
         cursor.close()
 
     def generar_inf_guardias(self, f_ini: datetime.date, f_fin: datetime.date):
+        f_ini.strftime("%Y-%m-%d")
+        f_fin.strftime("%Y-%m-%d")
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
         busqueda = (f"select * from guardias where"
@@ -126,10 +151,10 @@ class App:
         try:
             cursor.execute(busqueda)
             for id, dia, hora, curso, aula, tarea, ficheros in cursor:
-                print(f"Guardia ID {id}:\n"
-                      f"Día {dia} a las {hora} horas\n"
+                print(f"ID {id}:\n"
+                      f"Día {dia} a {hora} hora\n"
                       f"Curso: {curso}, aula {aula}\n"
-                      f"Tarea -> {tarea}")
+                      f"Tarea -> {tarea}\n\n")
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Error de conexión.")
