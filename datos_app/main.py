@@ -122,7 +122,7 @@ class App:
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
         busqueda = (f"select * from guardias where"
-                    f"{dia} between '{f_ini}' and '{f_fin}'")
+                    f"dia between '{f_ini}' and '{f_fin}'")
         try:
             cursor.execute(busqueda)
             for id, dia, hora, curso, aula, tarea, ficheros in cursor:
@@ -225,7 +225,7 @@ class App:
                 tarea: str = input("¿Tarea asignada a la guardia? (S/N): ")
                 fecha = datetime.datetime(anio, mes, dia)
                 if tarea == "S":
-                    fichero: str = input("Texto de la tarea: ")
+                    fichero: str = input("Nombre del fichero de la tarea: ")
                 else:
                     fichero = ""
                 self.dar_alta_guardia(id, fecha, hora, curso, clase, tarea, fichero)
@@ -243,7 +243,10 @@ class App:
                 anio_fin: int = int(input("Año: "))
                 fecha_ini: date = datetime.date(dia_ini, mes_ini, anio_ini)
                 fecha_fin: date = datetime.date(dia_fin, mes_fin, anio_fin)
-                generar_inf_guardias(fecha_ini, fecha_fin)
+                if fecha_ini < fecha_fin:
+                    generar_inf_guardias(fecha_ini, fecha_fin)
+                else:
+                    print("Fechas incorrectas.")
             elif opc == Cons.OPC_7: # Generar listado de usuarios
                 opc = input("1.- Listado de Profesores\n"
                             "2.- Listado de Admins.\n"
