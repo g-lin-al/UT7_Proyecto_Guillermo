@@ -118,8 +118,26 @@ class App:
                 print(err)
         cursor.close()
 
-    def generar_inf_guardias(self):
-        pass
+    def generar_inf_guardias(self, f_ini: datetime.date, f_fin: datetime.date):
+        cursor = self.CONEXION.cursor()
+        self.CONEXION.autocommit = True
+        busqueda = (f"select * from guardias where"
+                    f"{dia} between {f_ini} and {f_fin}")
+        try:
+            cursor.execute(busqueda)
+            for id, dia, hora, curso, aula, tarea, ficheros in cursor:
+                print(f"Guardia ID {id}:\n"
+                      f"Día {dia} a las {hora} horas\n"
+                      f"Curso: {curso}, aula {aula}\n"
+                      f"Tarea -> {tarea}")
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Error de conexión.")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("No existe dicha base de datos.")
+            else:
+                print(err)
+        cursor.close()
 
     def generar_listado_usuarios(self, tipo: str):
         cursor = self.CONEXION.cursor()
@@ -195,11 +213,11 @@ class App:
                 self.insertar_profesor(self.crear_profesor(id, nombre, apellidos, clave))
                 continue
             elif opc == Cons.OPC_3: # Ver calendario de guardias
-                print(opc)
+                fecha_ini: datetime.date
             elif opc == Cons.OPC_4: # Dar de alta guardias
                 id: str = input("ID del profesor de guardia: ")
                 dia: int = int(input("Día de la guardia: "))
-                mes: int = int(input("Mes: "))
+                mes: int = int(input("Mes (1-12): "))
                 anio: int = int(input("Año: "))
                 hora: str = input("Hora de la guardia (1-6): ")
                 curso: str = input("Curso de guardia (primero, segundo): ")
@@ -217,7 +235,15 @@ class App:
                 hora: str = input("Hora de la guardia: ")
                 self.dar_baja_guardia(id, dia, hora)
             elif opc == Cons.OPC_6: # Generar informe de guardias
-                print(opc)
+                dia_ini: int = int(input("Día de inicio de la búsqueda: "))
+                mes_ini: int = int(input("Mes (1-12): "))
+                anio_ini: int = int(input("Año: "))
+                dia_fin: int = int(input("Día de inicio de la búsqueda: "))
+                mes_fin: int = int(input("Mes (1-12): "))
+                anio_fin: int = int(input("Año: "))
+                fecha_ini: date = datetime.date(dia_ini, mes_ini, anio_ini)
+                fecha_fin: date = datetime.date(dia_fin, mes_fin, anio_fin)
+                generar_inf_guardias(fecha_ini, fecha_fin)
             elif opc == Cons.OPC_7: # Generar listado de usuarios
                 opc = input("1.- Listado de Profesores\n"
                             "2.- Listado de Admins.\n"
