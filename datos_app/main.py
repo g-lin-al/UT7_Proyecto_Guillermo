@@ -125,15 +125,16 @@ class App:
         cursor.close()
 
     def dar_baja_guardia(self, id: str, dia: datetime.date, hora: str):
+        dia = dia.strftime("%Y-%m-%d")
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
         borrar_guardia = (f"DELETE FROM guardias "
                           f"WHERE id = '{id}' "
-                          f"AND dia = {dia.isoformat()} "
+                          f"AND dia = '{dia}' "
                           f"AND hora = '{hora}'")
         try:
             cursor.execute(borrar_guardia)
-            print(f"Eliminada la guardia del día {dia} a las {hora} horas.")
+            print(f"\nEliminada la guardia del día {dia} a la {hora} hora.\n")
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Error de conexión.")
