@@ -19,3 +19,6 @@ insert ignore into profesores values ('9876546C', 'Profesor3', 'Apell3', '987');
 insert ignore into profesores values ('9876546C', 'Profesor3', 'Apell3', '987');
 insert ignore into profesores values ('11111A', 'Admin1', 'ADMIN', '111');
 insert ignore into profesores values ('22222B', 'Admin2', 'ADMIN', '222');
+insert ignore into guardias values ('123', '2000-05-04', 'primero', '4', 'biblioteca', 'n', '');
+insert ignore into guardias values ('123', '2026-06-04', 'segundo', '5', '6', 'n', '');
+insert ignore into guardias values ('456', '2026-09-07', 'primero', '4', '1', 's', 'tarea_456.pdf');

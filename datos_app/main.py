@@ -78,11 +78,12 @@ class App:
         cursor.close()
 
     def ver_calendario(self):
-        fecha_hoy = datetime.datetime.now().strftime("%Y-%m-%d")
-        fecha_aniadida = fecha_hoy + datetime.timedelta(days=7)
+        fecha_hoy = datetime.datetime.now()
+        fecha_aniadida = (fecha_hoy + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+        fecha_hoy = fecha_hoy.strftime("%Y-%m-%d")
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
-        busqueda = (f"select * from guardias where"
+        busqueda = (f"select * from guardias where "
                     f"dia between '{fecha_hoy}' and '{fecha_aniadida}'")
         try:
             cursor.execute(busqueda)
@@ -92,6 +93,8 @@ class App:
                           f"Día {dia} a las {hora} horas\n"
                           f"Curso: {curso}, aula {aula}\n"
                           f"Tarea -> {tarea}\n\n")
+
+                cursor.close()
             else:
                 print(f"No hay guardias en los 7 días siguientes a {fecha_hoy}")
         except mysql.connector.Error as err:
@@ -101,7 +104,6 @@ class App:
                 print("No existe dicha base de datos.")
             else:
                 print(err)
-        cursor.close()
 
     def dar_alta_guardia(self, id: str, dia: datetime.date, hora: str, curso: str, clase: str, tarea: str, fichero: str):
         guardia: Guardia = Guardia(id, dia, hora, curso, clase, tarea)
@@ -127,7 +129,7 @@ class App:
         self.CONEXION.autocommit = True
         borrar_guardia = (f"DELETE FROM guardias "
                           f"WHERE id = '{id}' "
-                          f"AND dia = {dia} "
+                          f"AND dia = {dia.isoformat()} "
                           f"AND hora = '{hora}'")
         try:
             cursor.execute(borrar_guardia)
@@ -146,7 +148,7 @@ class App:
         f_fin.strftime("%Y-%m-%d")
         cursor = self.CONEXION.cursor()
         self.CONEXION.autocommit = True
-        busqueda = (f"select * from guardias where"
+        busqueda = (f"select * from guardias where "
                     f"dia between '{f_ini}' and '{f_fin}'")
         try:
             cursor.execute(busqueda)
@@ -238,7 +240,7 @@ class App:
                 self.insertar_profesor(self.crear_profesor(id, nombre, apellidos, clave))
                 continue
             elif opc == Cons.OPC_3: # Ver calendario de guardias
-                fecha_ini: datetime.date
+                self.ver_calendario()
             elif opc == Cons.OPC_4: # Dar de alta guardias
                 id: str = input("ID del profesor de guardia: ")
                 dia: int = int(input("Día de la guardia: "))
@@ -256,20 +258,23 @@ class App:
                 self.dar_alta_guardia(id, fecha, hora, curso, clase, tarea, fichero)
             elif opc == Cons.OPC_5: # Dar de baja guardias
                 id: str = input("ID del profesor de guardia: ")
-                dia: str = input("Día de la guardia: ")
+                dia: int = int(input("Día de la guardia: "))
+                mes: int = int(input("Mes: "))
+                anio: int = int(input("Año: "))
                 hora: str = input("Hora de la guardia: ")
-                self.dar_baja_guardia(id, dia, hora)
+                fecha = datetime.datetime(anio, mes, dia)
+                self.dar_baja_guardia(id, fecha, hora)
             elif opc == Cons.OPC_6: # Generar informe de guardias
-                dia_ini: int = int(input("Día de inicio de la búsqueda: "))
+                dia_ini: int = int(input("Primer día de la búsqueda: "))
                 mes_ini: int = int(input("Mes (1-12): "))
                 anio_ini: int = int(input("Año: "))
-                dia_fin: int = int(input("Día de inicio de la búsqueda: "))
+                dia_fin: int = int(input("Último día de la búsqueda: "))
                 mes_fin: int = int(input("Mes (1-12): "))
                 anio_fin: int = int(input("Año: "))
-                fecha_ini: date = datetime.date(dia_ini, mes_ini, anio_ini)
-                fecha_fin: date = datetime.date(dia_fin, mes_fin, anio_fin)
+                fecha_ini: date = datetime.date(anio_ini, mes_ini, dia_ini)
+                fecha_fin: date = datetime.date(anio_fin, mes_fin, dia_fin)
                 if fecha_ini < fecha_fin:
-                    generar_inf_guardias(fecha_ini, fecha_fin)
+                    self.generar_inf_guardias(fecha_ini, fecha_fin)
                 else:
                     print("Fechas incorrectas.")
             elif opc == Cons.OPC_7: # Generar listado de usuarios
@@ -278,7 +283,7 @@ class App:
                             "-> ")
                 self.generar_listado_usuarios(opc)
             elif opc == Cons.OPC_8:
-                print("Saliendo...")
+                print("\nSaliendo...")
                 self.CONEXION.close()
             else:
                 print("Opción no reconocida")
