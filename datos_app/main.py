@@ -68,7 +68,6 @@ class App:
                           f"Día {dia} a las {hora} horas\n"
                           f"Curso: {curso}, aula {aula}\n"
                           f"Tarea -> {tarea}\n\n")
-
                 cursor.close()
             else:
                 print(f"No hay guardias en los 7 días siguientes a {fecha_hoy}")
