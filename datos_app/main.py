@@ -272,8 +272,8 @@ class App:
                 dia_fin: int = int(input("Último día de la búsqueda: "))
                 mes_fin: int = int(input("Mes (1-12): "))
                 anio_fin: int = int(input("Año: "))
-                fecha_ini: date = datetime.date(anio_ini, mes_ini, dia_ini)
-                fecha_fin: date = datetime.date(anio_fin, mes_fin, dia_fin)
+                fecha_ini = datetime.date(anio_ini, mes_ini, dia_ini)
+                fecha_fin = datetime.date(anio_fin, mes_fin, dia_fin)
                 if fecha_ini < fecha_fin:
                     self.generar_inf_guardias(fecha_ini, fecha_fin)
                 else:
