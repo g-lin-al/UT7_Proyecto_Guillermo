@@ -27,31 +27,6 @@ class App:
         opc = input("¿Opción? -> ")
         return opc
 
-    def realizar_nueva_operacion(self):
-        opc: str = "-1"
-        print(f"¿Realizar otra operación?\n"
-              f"{Cons.OPC_1} - Sí\n"
-              f"{Cons.OPC_2} - No\n")
-        opc = self.elegir_opcion()
-        if opc == Cons.OPC_1:
-            return Cons.OPC_1
-        elif opc == Cons.OPC_2:
-            return Cons.OPC_2
-        else:
-            self.opcion_no_reconocida()
-
-    def opcion_no_reconocida(self):
-        print(f"Opción no reconocida. ¿Intentar de nuevo?\n"
-              f"{Cons.OPC_1} - Sí\n"
-              f"{Cons.OPC_2} - No\n")
-        opc = self.elegir_opcion()
-        if opc == Cons.OPC_1:
-            return Cons.OPC_1
-        elif opc == Cons.OPC_2:
-            return Cons.OPC_2
-        else:
-            return "Opción no reconocida."
-
     def crear_admin(self, id: str, nombre: str, clave: str) -> Profesor:
         adm: Profesor = Profesor(id, nombre, "ADMIN", clave)
         return adm
@@ -74,7 +49,7 @@ class App:
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("No existe dicha base de datos.")
             else:
-                print(err)
+                print("Error en la operación. Inténtelo de nuevo.")
         cursor.close()
 
     def ver_calendario(self):
@@ -103,7 +78,7 @@ class App:
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("No existe dicha base de datos.")
             else:
-                print(err)
+                print("Error en la operación. Inténtelo de nuevo.")
 
     def dar_alta_guardia(self, id: str, dia: datetime.date, hora: str, curso: str, clase: str, tarea: str, fichero: str):
         guardia: Guardia = Guardia(id, dia, hora, curso, clase, tarea)
@@ -121,7 +96,7 @@ class App:
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("No existe dicha base de datos.")
             else:
-                print(err)
+                print("Error en la operación. Inténtelo de nuevo.")
         cursor.close()
 
     def dar_baja_guardia(self, id: str, dia: datetime.date, hora: str):
@@ -141,7 +116,7 @@ class App:
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("No existe dicha base de datos.")
             else:
-                print(err)
+                print("Error en la operación. Inténtelo de nuevo.")
         cursor.close()
 
     def generar_inf_guardias(self, f_ini: datetime.date, f_fin: datetime.date):
@@ -164,7 +139,7 @@ class App:
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("No existe dicha base de datos.")
             else:
-                print(err)
+                print("Error en la operación. Inténtelo de nuevo.")
         cursor.close()
 
     def generar_listado_usuarios(self, tipo: str):
@@ -183,7 +158,7 @@ class App:
                 elif err.errno == errorcode.ER_BAD_DB_ERROR:
                     print("No existe dicha base de datos.")
                 else:
-                    print(err)
+                    print("Error en la operación. Inténtelo de nuevo.")
         elif tipo == Cons.OPC_2:
             listar_usuarios = listar_usuarios + " where apellidos = 'ADMIN'"
             try:
@@ -196,7 +171,7 @@ class App:
                 elif err.errno == errorcode.ER_BAD_DB_ERROR:
                     print("No existe dicha base de datos.")
                 else:
-                    print(err)
+                    print("Error en la operación. Inténtelo de nuevo.")
         else:
             print("Opción no válida.")
         cursor.close()
@@ -217,7 +192,7 @@ class App:
                     elif err.errno == errorcode.ER_BAD_DB_ERROR:
                         print("No existe dicha base de datos.")
                     else:
-                        print(err)
+                        print("Error en la operación. Inténtelo de nuevo.")
 
     def run(self):
         self.cargar_inicio()
